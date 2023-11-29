@@ -7,10 +7,9 @@ int main() {
 	double p, itog = 0;
 	for (int i = 0; i < n; ++i)
 	{
-		p += cin >> p;
+		cin >> p;
 		itog += p / 100;
 	}
-	cout << itog / n;
-
+	printf("%.6f", itog / n * 100);
 	return 0;
 }
