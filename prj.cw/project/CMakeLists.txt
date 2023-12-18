@@ -10,7 +10,7 @@ find_package(GLEW REQUIRED)
 find_package(libigl CONFIG REQUIRED)
 find_package(imgui REQUIRED)
 
-add_executable(app "code/morphing_fuction.cpp")
+add_executable(app "code/simur.cpp")
 
 target_link_libraries(app sfml-window sfml-graphics)
 target_link_libraries(app GLUT::GLUT)
