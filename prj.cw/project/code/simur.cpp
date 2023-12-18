@@ -32,33 +32,45 @@ d_horns;
 Eigen::MatrixXi F, F1;
 
 
-//
+// Сохраняет файл разрешения .obj.
+// Входные данные: 
+// 1. Строка - адрес и название, куда будет сохранен файл.
+// 2. Матрица вершин(vertices).
+// 3. Матрица сторон(faces).
 void save_file() {
 	igl::writeOBJ("C:\\Users\\user\\Desktop\\models\\RESULT.obj", Union, F);
 }
 
 
-//
+// Округляет до 4х знаков после запятой.
+// Алгоритм действий: проверка файла на разрешение -> вызов функции чтения -> округление -> запись
+// Входные данные:
+// 1. Адрес файла, который надо обработать.
+// 2. Адрес, куда записать обработанный файл. Адрес должен содержать название файла.
 void rounder(std::string source_input, std::string source_output) {
+	// Создание матриц для вершин и сторон
 	Eigen::MatrixXd V_spec_for_rounder;
 	Eigen::MatrixXi F_spec_for_rounder;
 
+	// Проверка на разрешение файла.
 	if (source_input.substr(source_input.size() - 3, 3) == "obj") {
-		if (igl::readOBJ(source_input, V_spec_for_rounder, F_spec_for_rounder))
+		if (igl::readOBJ(source_input, V_spec_for_rounder, F_spec_for_rounder)) // Чтение файла
 		{
+			// Округление
 			for (int i = 0; i < V_spec_for_rounder.rows(); i++) {
 				for (int j = 0; j < 3; j++) {
 					V_spec_for_rounder(i, j) = std::round(V_spec_for_rounder(i, j) * 10000) / 10000;
 				}
-			}
-			if (igl::writeOBJ(source_output, V_spec_for_rounder, F_spec_for_rounder))
+			} 
+			if (igl::writeOBJ(source_output, V_spec_for_rounder, F_spec_for_rounder)) // Запись файла
 			{
-				std::cout << "\nRounder result: SUCCESS\n";
+				std::cout << "\nRounder result: SUCCESS\n"; 
 			}
 			else std::cout << "\nRounder result: ERROR due writing obj\n";
 		}
 		else std::cout << "\nRounder result: ERROR due reading obj\n";
 	}
+	// Проверка на разрешение файла.
 	else if (source_input.substr(source_input.size() - 3, 3) == "off")
 	{
 		if (igl::readOFF(source_input, V_spec_for_rounder, F_spec_for_rounder))
@@ -83,7 +95,10 @@ void rounder(std::string source_input, std::string source_output) {
 }
 
 
-//
+// Конвертирует файл из off в obj. Есть аналогичная функция, которая конвертирует из obj в off.
+// Входные данные:
+// 1. Адрес файла, который надо обработать.
+// 2. Адрес, куда записать обработанный файл. Адрес должен содержать название файла.
 void convert_off_to_obj(std::string source_input, std::string source_output) {
 	Eigen::MatrixXd V_spec_for_conv;
 	Eigen::MatrixXi F_spec_for_conv;
@@ -98,6 +113,11 @@ void convert_off_to_obj(std::string source_input, std::string source_output) {
 	}
 	else std::cout << "\nConvert result: ERROR due reading\n";
 }
+
+// Конвертирует файл из obj в off. Есть аналогичная функция, которая конвертирует из off в obj.
+// Входные данные:
+// 1. Адрес файла, который надо обработать.
+// 2. Адрес, куда записать обработанный файл. Адрес должен содержать название файла.
 void convert_obj_to_off(std::string source_input, std::string source_output) {
 	Eigen::MatrixXd V_spec_for_conv;
 	Eigen::MatrixXi F_spec_for_conv;
@@ -114,8 +134,12 @@ void convert_obj_to_off(std::string source_input, std::string source_output) {
 }
 
 
-//
-void wriste_obj(Eigen::MatrixXd V_input, Eigen::MatrixXi F_input, std::string source_output) {
+// Записывает в файл данные из матриц вершин и сторон.
+// Входные данные:
+// 1. Матрица вершин.
+// 2. Матрица сторон.
+// 3. Адрес, куда записать полученный файл.
+void write_obj(Eigen::MatrixXd V_input, Eigen::MatrixXi F_input, std::string source_output) {
 	std::ofstream out;
 	// "C:\\Users\\user\\Desktop\\test\\V3.txt"
 	out.open(source_output);
@@ -130,6 +154,8 @@ void wriste_obj(Eigen::MatrixXd V_input, Eigen::MatrixXi F_input, std::string so
 }
 
 
+// Считывет нажатия цифр с клавиатуры и изменяет лицо.
+// Необходимо для работы draw_mesh()
 bool key_down(igl::opengl::glfw::Viewer& viewer_temp, unsigned char key, int mods) {
 	switch (key) {
 	case '1':
@@ -185,6 +211,7 @@ bool key_down(igl::opengl::glfw::Viewer& viewer_temp, unsigned char key, int mod
 	return false;
 }
 
+// Необходимо для работы draw_mesh()
 bool pre_draw(igl::opengl::glfw::Viewer& viewer_temp) {
 	viewer_temp.data().set_vertices(Union);
 	viewer_temp.data().compute_normals();
@@ -192,7 +219,9 @@ bool pre_draw(igl::opengl::glfw::Viewer& viewer_temp) {
 }
 
 
-//
+// Записывает в матрицы данные с файлов OBJ.
+// Необходима для работы в режиме редактирования лица.
+// Внимательно смотрите адреса считываемых файлов внутри функции.
 void init_bones()
 {
 	// main face
@@ -212,7 +241,10 @@ void init_bones()
 }
 
 
-// 
+// Запускает режим просмотра 3д модели. 
+// Внутри функции считывается файл по переданному адресу.
+// Далее, сразу запускается окно просмотра.
+// Не позволяет редактировать лицо.
 void fast_draw(std::string source_to_file) {
 
 	igl::readOBJ(source_to_file, V, F);
@@ -223,7 +255,8 @@ void fast_draw(std::string source_to_file) {
 }
 
 
-//
+// Запускает окно просмотра 3д модели с возможностью редактирования лица.
+// Для корректной работы необходимо считать и дополнительные файла - запустите функцию init_bones()
 void draw_mesh() {
 	Union = V;
 	igl::opengl::glfw::Viewer viewer;
@@ -245,18 +278,17 @@ void set_color();
 int main() {
 	// INTRO
 	std::cout << "--- Introduction message ---" << std::endl;
-	std::cout << "--- Info about all functions --- " << std::endl;
+	//std::cout << "--- Info about all functions --- " << std::endl;
 
 
-	// ASK MODE
-	std::cout << "--- Choose mode, you would like to continue ---" << std::endl;
+	//// ASK MODE
+	//std::cout << "--- Choose mode, you would like to continue ---" << std::endl;
 	
 
 	if (false)
 	{
 		// VIEWER MODE
 		std::cout << "--- Write file name, you want see ---" << std::endl;
-		// Main face - base
 		fast_draw("C:\\Users\\user\\Desktop\\models\\face.obj");
 	}
 	else
