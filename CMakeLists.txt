@@ -34,5 +34,5 @@ else (DOXYGEN_FOUND)
  message("Doxygen needs to be installed to generate the doxygen documentation")
 endif (DOXYGEN_FOUND)
 
-add_subdirectory(prj.cw/project/code)
-add_subdirectory(prj.cw/project/examples)
+add_subdirectory(prj.codeforces)
+add_subdirectory(prj.cw)
